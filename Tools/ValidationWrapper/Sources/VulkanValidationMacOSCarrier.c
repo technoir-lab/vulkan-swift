@@ -1,0 +1,1 @@
+void vulkan_validation_macos_carrier(void) {}

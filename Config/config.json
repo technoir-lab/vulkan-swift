@@ -1,0 +1,80 @@
+{
+  "sdkVersion": "1.4.357.0",
+  "platforms": {
+    "macOS": {
+      "deploymentTarget": "26.0"
+    },
+    "iOS device": {
+      "deploymentTarget": "26.0",
+      "triple": "arm64-apple-ios",
+      "sdk": "iphoneos"
+    },
+    "iOS Simulator": {
+      "deploymentTarget": "26.0",
+      "triple": "arm64-apple-ios-simulator",
+      "sdk": "iphonesimulator"
+    }
+  },
+  "repository": "https://github.com/technoir-lab/vulkan-swift",
+  "artifacts": [
+    {
+      "id": "VulkanLoaderMacOS",
+      "kind": "wrapped-dylib",
+      "source": "$SDK_ROOT/macOS/lib/libvulkan.1.dylib",
+      "local": "Artifacts/VulkanLoader-macos.xcframework",
+      "licenses": [
+        "Vulkan-Loader.txt"
+      ]
+    },
+    {
+      "id": "VulkanLoaderIOS",
+      "kind": "vendor-xcframework",
+      "source": "$SDK_ROOT/iOS/lib/vulkan.xcframework",
+      "local": "Artifacts/VulkanLoader-ios.xcframework",
+      "licenses": [
+        "Vulkan-Loader.txt"
+      ]
+    },
+    {
+      "id": "KosmicKrisp",
+      "kind": "wrapped-dylib",
+      "source": "$SDK_ROOT/macOS/lib/libvulkan_kosmickrisp.dylib",
+      "local": "Artifacts/KosmicKrisp.xcframework",
+      "licenses": [
+        "Mesa-MIT.txt"
+      ]
+    },
+    {
+      "id": "MoltenVK",
+      "kind": "vendor-xcframework",
+      "source": "$SDK_ROOT/iOS/lib/MoltenVK.xcframework",
+      "local": "Artifacts/MoltenVK.xcframework",
+      "licenses": [
+        "MoltenVK.txt"
+      ]
+    },
+    {
+      "id": "VulkanValidationMacOS",
+      "kind": "wrapped-bundle",
+      "source": "$SDK_ROOT/macOS/lib/libVkLayer_khronos_validation.dylib",
+      "local": "Artifacts/VulkanValidation-macos.xcframework",
+      "framework": "VulkanValidationMacOS",
+      "licenses": [
+        "Vulkan-ValidationLayers.txt",
+        "Vulkan-ValidationLayers-MIT.txt",
+        "Vulkan-ValidationLayers-BSD-2-Clause.txt"
+      ]
+    },
+    {
+      "id": "VulkanValidationIOS",
+      "kind": "vendor-xcframework",
+      "source": "$SDK_ROOT/iOS/lib/VkLayer_khronos_validation.xcframework",
+      "local": "Artifacts/VulkanValidation-ios.xcframework",
+      "licenses": [
+        "Vulkan-ValidationLayers.txt",
+        "Vulkan-ValidationLayers-MIT.txt",
+        "Vulkan-ValidationLayers-BSD-2-Clause.txt"
+      ]
+    }
+  ]
+}

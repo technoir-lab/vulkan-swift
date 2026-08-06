@@ -1,0 +1,40 @@
+name: CI
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+concurrency:
+  group: ${{ github.workflow_ref }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    name: Build and check
+    runs-on: macos-26
+
+    permissions:
+      contents: read
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7.0.1
+
+      - name: Resolve Vulkan SDK version
+        id: sdk-version
+        run: echo "version=$(jq -r .sdkVersion Config/config.json)" >> "$GITHUB_OUTPUT"
+
+      - name: Install Vulkan SDK
+        uses: technoir-lab/install-vulkan-sdk@v1.3.2
+        with:
+          version: ${{ steps.sdk-version.outputs.version }}
+          components: com.lunarg.vulkan.volk com.lunarg.vulkan.ios com.lunarg.vulkan.kosmic
+          cache: true
+
+      - name: Install Tuist
+        run: brew install --cask tuist
+
+      - name: Build and check
+        run: make ci

@@ -1,0 +1,49 @@
+name: Release
+
+on:
+  push:
+    tags: [ "*" ]
+
+concurrency:
+  group: ${{ github.workflow_ref }}
+
+jobs:
+  deploy:
+    name: Deploy release binaries
+    runs-on: macos-26
+
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7.0.1
+
+      - name: Resolve Vulkan SDK version
+        id: sdk-version
+        run: echo "version=$(jq -r .sdkVersion Config/config.json)" >> "$GITHUB_OUTPUT"
+
+      - name: Install Vulkan SDK
+        uses: technoir-lab/install-vulkan-sdk@v1.3.2
+        with:
+          version: ${{ steps.sdk-version.outputs.version }}
+          components: com.lunarg.vulkan.volk com.lunarg.vulkan.ios com.lunarg.vulkan.kosmic
+          cache: true
+
+      - name: Install Tuist
+        run: brew install --cask tuist
+
+      - name: Verify tag matches the package version
+        run: make check-package-version VERSION="${{ github.ref_name }}"
+
+      - name: Build release archives
+        run: make dist
+
+      - name: Run complete verification
+        run: make ci
+
+      - name: Create release
+        uses: softprops/action-gh-release@v3.0.2
+        with:
+          files: Dist/*.zip
+          tag_name: ${{ github.ref_name }}
