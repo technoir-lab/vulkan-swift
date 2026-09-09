@@ -135,6 +135,9 @@ stage() {
                 die "unknown artifact kind '$kind' for $id"
                 ;;
         esac
+        # Work only on staged copies, after the byte-preserving packaging steps.
+        # The signer preserves existing signatures and audits all other contents.
+        python3 "$repo_root/Scripts/sign-unsigned.py" "$local_path"
     done
 }
 

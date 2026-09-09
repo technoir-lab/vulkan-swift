@@ -56,6 +56,9 @@ let project = Project(
                         "$(inherited)",
                         "-Wl,-S",
                         "-Wl,-x",
+                        // Sign every architecture after resources and stable
+                        // bundle metadata are finalized during staging.
+                        "-Wl,-no_adhoc_codesign",
                     ],
                 ]
             )

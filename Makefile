@@ -5,7 +5,7 @@ SHELL := /bin/bash
 # Consumers (no VULKAN_SWIFT_ARTIFACTS) still get remote URLs.
 export VULKAN_SWIFT_ARTIFACTS ?= Artifacts
 
-.PHONY: all artifacts archives build test check check-sample \
+.PHONY: all artifacts archives build test test-signing check check-sample \
 	dist ci clean release check-package-version
 
 all: check
@@ -20,7 +20,11 @@ archives: artifacts
 	@Scripts/archive-artifacts.sh
 
 test: archives
+	@$(MAKE) test-signing
 	@Scripts/check-package.sh
+
+test-signing:
+	@python3 -B Tests/SigningTests.py
 
 check: test check-sample
 
