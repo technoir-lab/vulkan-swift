@@ -23,7 +23,7 @@ let artifactsDirectory = localArtifactsDirectory()
 // SwiftPM package version, kept in sync with the release git tag by
 // Scripts/release.sh. sdkVersion mirrors the SDK version from the central
 // configuration so both values appear exactly once per binary URL.
-let packageVersion = "1.0.0"
+let packageVersion = "1.0.1"
 let sdkVersion = "1.4.357.0"
 let repository = "https://github.com/technoir-lab/vulkan-swift"
 
