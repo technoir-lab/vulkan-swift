@@ -34,7 +34,7 @@ struct ManifestTests {
         )
         #expect(
             path
-                == "../../../../Frameworks/libvulkan_kosmickrisp.dylib"
+                == "../../../../../../Frameworks/libvulkan_kosmickrisp.dylib"
         )
     }
 
@@ -47,7 +47,7 @@ struct ManifestTests {
         )
         #expect(
             path
-                == "../../../../Frameworks/MoltenVK.framework/Versions/A/MoltenVK"
+                == "../../../../../../Frameworks/MoltenVK.framework/Versions/A/MoltenVK"
         )
     }
 
@@ -74,7 +74,7 @@ struct ManifestTests {
         #expect(layer["name"] as? String == "VK_LAYER_KHRONOS_validation")
         #expect(
             layer["library_path"] as? String
-                == "../../../../Frameworks/VulkanValidationMacOS.framework/Versions/A/Resources/libVkLayer_khronos_validation.dylib"
+                == "../../../../../../Frameworks/VulkanValidationMacOS.framework/Versions/A/Resources/libVkLayer_khronos_validation.dylib"
         )
     }
 
@@ -91,6 +91,36 @@ struct ManifestTests {
             layer["library_path"] as? String
                 == "../../../Frameworks/VkLayer_khronos_validation.framework/VkLayer_khronos_validation"
         )
+    }
+
+    @Test("manifest library paths resolve within standard Apple app bundles")
+    func manifestLibraryLocations() throws {
+        let app = URL(fileURLWithPath: "/Applications/Sample.app", isDirectory: true)
+        let cases: [(String, String, String, String)] = [
+            ("VulkanDriverMacOSResources", "icd.d", "libkosmickrisp_icd.json",
+             "libvulkan_kosmickrisp.dylib"),
+            ("VulkanDriverMacOSResources", "icd.d", "MoltenVK_icd.json",
+             "MoltenVK.framework/Versions/A/MoltenVK"),
+            ("VulkanValidationMacOSResources", "explicit_layer.d", "VkLayer_khronos_validation.json",
+             "VulkanValidationMacOS.framework/Versions/A/Resources/libVkLayer_khronos_validation.dylib"),
+            ("VulkanDriverIOSResources", "icd.d", "MoltenVK_icd.json",
+             "MoltenVK.framework/MoltenVK"),
+            ("VulkanValidationIOSResources", "explicit_layer.d", "VkLayer_khronos_validation.json",
+             "VkLayer_khronos_validation.framework/VkLayer_khronos_validation"),
+        ]
+        for (target, directory, filename, library) in cases {
+            let isMacOS = target.contains("MacOS")
+            let bundle = "vulkan-swift_\(target).bundle"
+            let resources = isMacOS
+                ? "Contents/Resources/\(bundle)/Contents/Resources"
+                : bundle
+            let manifestDirectory = app.appendingPathComponent("\(resources)/vulkan/\(directory)", isDirectory: true)
+            let path = try libraryPath(target, "vulkan/\(directory)", named: filename)
+            let actual = URL(fileURLWithPath: path, relativeTo: manifestDirectory).standardizedFileURL
+            let frameworks = isMacOS ? "Contents/Frameworks" : "Frameworks"
+            let expected = app.appendingPathComponent("\(frameworks)/\(library)")
+            #expect(actual.path == expected.path, "Incorrect library location for \(target)/\(filename)")
+        }
     }
 
     @Test("manifests match vendor JSON except library_path overrides")

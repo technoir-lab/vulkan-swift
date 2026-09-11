@@ -117,23 +117,6 @@ func appTarget(
         deploymentTargets: deploymentTarget,
         infoPlist: infoPlist,
         sources: ["Sources/Sample/**"],
-        scripts: [
-            .post(
-                script: """
-                    resources_dir="${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}"
-                    for bundle in "${resources_dir}"/*.bundle; do
-                        [ -d "$bundle" ] || continue
-                        nested="$bundle/Contents/Resources"
-                        if [ -d "$nested" ]; then
-                            ditto "$nested" "$bundle"
-                            rm -rf "$bundle/Contents"
-                        fi
-                    done
-                    """,
-                name: "Flatten Vulkan resource bundles",
-                basedOnDependencyAnalysis: false
-            ),
-        ],
         dependencies: dependencies,
         settings: .settings(
             base: [
