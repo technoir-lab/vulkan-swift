@@ -125,13 +125,13 @@ check_macos_bundle() {
     assert_present "$app" "Contents/Frameworks/libvulkan_kosmickrisp.dylib" "macOS $configuration"
     assert_present "$app" "Contents/Frameworks/MoltenVK.framework/MoltenVK" "macOS $configuration"
     assert_present "$app" \
-        "Contents/Resources/vulkan-swift_VulkanDriverMacOSResources.bundle/vulkan/icd.d/libkosmickrisp_icd.json" \
+        "Contents/Resources/vulkan-swift_VulkanDriverMacOSResources.bundle/Contents/Resources/vulkan/icd.d/libkosmickrisp_icd.json" \
         "macOS $configuration"
     assert_present "$app" \
-        "Contents/Resources/vulkan-swift_VulkanDriverMacOSResources.bundle/vulkan/icd.d/MoltenVK_icd.json" \
+        "Contents/Resources/vulkan-swift_VulkanDriverMacOSResources.bundle/Contents/Resources/vulkan/icd.d/MoltenVK_icd.json" \
         "macOS $configuration"
     assert_present "$app" \
-        "Contents/Resources/vulkan-swift_VulkanValidationMacOSResources.bundle/vulkan/explicit_layer.d/VkLayer_khronos_validation.json" \
+        "Contents/Resources/vulkan-swift_VulkanValidationMacOSResources.bundle/Contents/Resources/vulkan/explicit_layer.d/VkLayer_khronos_validation.json" \
         "macOS $configuration"
     assert_present "$app" \
         "Contents/Frameworks/VulkanValidationMacOS.framework/Versions/A/Resources/libVkLayer_khronos_validation.dylib" \

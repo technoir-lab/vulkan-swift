@@ -31,7 +31,7 @@ Packaging:
 - macOS: `libvulkan.1.dylib`, `libvulkan_kosmickrisp.dylib`, and
   `MoltenVK.framework` land in `Contents/Frameworks`; the KosmicKrisp and
   MoltenVK ICD manifests are in
-  `<Pkg>_VulkanDriverMacOSResources.bundle/vulkan/icd.d/`.
+  `Contents/Resources/<Pkg>_VulkanDriverMacOSResources.bundle/Contents/Resources/vulkan/icd.d/`.
 - iOS: `vulkan.xcframework` + `MoltenVK.xcframework` land in `Frameworks/`;
   the MoltenVK ICD manifest is in
   `<Pkg>_VulkanDriverIOSResources.bundle/vulkan/icd.d/`.
@@ -39,6 +39,13 @@ Packaging:
   resources contain `libVkLayer_khronos_validation.dylib`; iOS ships
   `VkLayer_khronos_validation.xcframework`. The platform layer manifest is in
   `vulkan/explicit_layer.d/` inside the validation resource bundle.
+
+Manifest library paths target the standard Xcode app layout. Preserve the
+resource bundles as built, and use `Bundle(url:)?.resourceURL` to locate their
+contents: macOS bundles have a nested `Contents/Resources` directory, while iOS
+bundles keep resources at their root. No manifest rewriting or bundle flattening
+is needed for this layout. Consumers that arrange libraries and resources
+differently must provide matching manifest paths.
 
 Staging preserves SDK payloads, then adds deterministic ad-hoc signatures to
 unsigned runtime Mach-O binaries and frameworks across all shipped Apple

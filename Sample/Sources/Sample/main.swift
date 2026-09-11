@@ -18,7 +18,8 @@ func configureVulkanManifestEnvironment() {
         includingPropertiesForKeys: nil
     )) ?? []
     for bundleURL in bundleURLs where bundleURL.pathExtension == "bundle" {
-        let vulkanRoot = bundleURL.appendingPathComponent("vulkan")
+        let bundleResources = Bundle(url: bundleURL)?.resourceURL ?? bundleURL
+        let vulkanRoot = bundleResources.appendingPathComponent("vulkan")
 
         let icdDirectory = vulkanRoot.appendingPathComponent("icd.d")
         let manifests = (try? FileManager.default.contentsOfDirectory(

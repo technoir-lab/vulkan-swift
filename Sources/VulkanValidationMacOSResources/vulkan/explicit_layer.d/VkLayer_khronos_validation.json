@@ -4,7 +4,7 @@
         "name": "VK_LAYER_KHRONOS_validation",
         "prefix": "vvl",
         "type": "GLOBAL",
-        "library_path": "../../../../Frameworks/VulkanValidationMacOS.framework/Versions/A/Resources/libVkLayer_khronos_validation.dylib",
+        "library_path": "../../../../../../Frameworks/VulkanValidationMacOS.framework/Versions/A/Resources/libVkLayer_khronos_validation.dylib",
         "api_version": "1.4.357",
         "implementation_version": "1",
         "description": "Khronos Validation Layer",
