@@ -45,7 +45,7 @@ VulkanProbeResult vulkan_probe(void)
 
     const char* enabledExtensions[1];
     uint32_t enabledExtensionCount = 0;
-#if TARGET_OS_OSX || TARGET_OS_IPHONE
+#if TARGET_OS_IPHONE
     enabledExtensions[enabledExtensionCount++] =
         VK_KHR_PORTABILITY_ENUMERATION_EXTENSION_NAME;
 #endif
@@ -74,7 +74,7 @@ VulkanProbeResult vulkan_probe(void)
         .enabledExtensionCount = enabledExtensionCount,
         .ppEnabledExtensionNames = enabledExtensions,
     };
-#if TARGET_OS_OSX || TARGET_OS_IPHONE
+#if TARGET_OS_IPHONE
     createInfo.flags |= VK_INSTANCE_CREATE_ENUMERATE_PORTABILITY_BIT_KHR;
 #endif
 

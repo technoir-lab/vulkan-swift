@@ -116,10 +116,6 @@ let package = Package(
                     condition: .when(platforms: [.macOS])
                 ),
                 .target(
-                    name: "MoltenVK",
-                    condition: .when(platforms: [.macOS, .iOS])
-                ),
-                .target(
                     name: "KosmicKrisp",
                     condition: .when(platforms: [.macOS])
                 ),
@@ -129,6 +125,10 @@ let package = Package(
                 ),
                 .target(
                     name: "VulkanLoaderIOS",
+                    condition: .when(platforms: [.iOS])
+                ),
+                .target(
+                    name: "MoltenVK",
                     condition: .when(platforms: [.iOS])
                 ),
                 .target(

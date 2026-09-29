@@ -53,28 +53,25 @@ assert_present() {
 
 run_macos_app() {
     local configuration="$1"
-    local expected_driver="$2"
-    local expected_validation="$3"
-    local icd_manifest="$4"
+    local expected_validation="$2"
     local app
     app="$(app_dir "$configuration")"
     local output
     if ! output="$(
         sanitize_vulkan_env
-        export VULKAN_SWIFT_SAMPLE_ICD="$icd_manifest"
         "$app/Contents/MacOS/VulkanSwiftSample" 2>&1
     )"; then
-        die "macOS $configuration: $expected_driver probe failed: $output"
+        die "macOS $configuration: KosmicKrisp probe failed: $output"
     fi
-    echo "$output" | grep -Eq "Driver: ($expected_driver)" \
-        || die "macOS $configuration: expected driver '$expected_driver', got: $output"
+    echo "$output" | grep -q "Driver: KosmicKrisp" \
+        || die "macOS $configuration: expected driver 'KosmicKrisp', got: $output"
     echo "$output" | grep -q "Validation: $expected_validation" \
         || die "macOS $configuration: expected validation '$expected_validation', got: $output"
     echo "$output" | grep -q "Vulkan version:" \
         || die "macOS $configuration: no Vulkan version in output: $output"
     echo "$output" | grep -q "Device Vulkan version:" \
         || die "macOS $configuration: no device Vulkan version in output: $output"
-    log "macOS $configuration: $expected_driver, Vulkan 1.4, validation $expected_validation"
+    log "macOS $configuration: KosmicKrisp, Vulkan 1.4, validation $expected_validation"
 }
 
 find_simulator() {
@@ -131,12 +128,10 @@ check_macos_bundle() {
     app="$(app_dir "$configuration")"
     assert_present "$app" "Contents/Frameworks/vulkan.framework/Versions/A/vulkan" "macOS $configuration"
     assert_present "$app" "Contents/Frameworks/KosmicKrisp.framework/Versions/A/KosmicKrisp" "macOS $configuration"
-    assert_present "$app" "Contents/Frameworks/MoltenVK.framework/MoltenVK" "macOS $configuration"
+    assert_absent "$app" "MoltenVK.framework" "macOS $configuration"
+    assert_absent "$app" "MoltenVK_icd.json" "macOS $configuration"
     assert_present "$app" \
         "Contents/Resources/vulkan-swift_VulkanDriverMacOSResources.bundle/Contents/Resources/vulkan/icd.d/libkosmickrisp_icd.json" \
-        "macOS $configuration"
-    assert_present "$app" \
-        "Contents/Resources/vulkan-swift_VulkanDriverMacOSResources.bundle/Contents/Resources/vulkan/icd.d/MoltenVK_icd.json" \
         "macOS $configuration"
     assert_present "$app" \
         "Contents/Resources/vulkan-swift_VulkanValidationMacOSResources.bundle/Contents/Resources/vulkan/explicit_layer.d/VkLayer_khronos_validation.json" \
@@ -176,15 +171,10 @@ build_configuration() {
         -configuration "$configuration" \
         -destination "$mac_destination" \
         -derivedDataPath "$derived_data" \
-        CODE_SIGNING_ALLOWED=NO \
         >"$mac_log" 2>&1; then
         tail -n 60 "$mac_log" >&2
         die "macOS $configuration build failed"
     fi
-    # Xcode 26 cannot finalize app signing through MoltenVK's Versions/Current
-    # symlink on CI, so sign the runtime binary without inspecting its bundle.
-    codesign --force --sign - \
-        "$(app_dir "$configuration")/Contents/Frameworks/MoltenVK.framework/Versions/A/MoltenVK"
     if ! tuist xcodebuild build \
         -workspace Sample.xcworkspace \
         -scheme SampleIOS \
@@ -201,9 +191,8 @@ build_configuration() {
     if [[ "${VULKAN_SWIFT_SAMPLE_SKIP_KOSMICKRISP:-0}" == 1 ]]; then
         log "macOS $configuration: KosmicKrisp runtime check skipped (Metal 4 hardware required)"
     else
-        run_macos_app "$configuration" "KosmicKrisp" "$expected_validation" "libkosmickrisp_icd.json"
+        run_macos_app "$configuration" "$expected_validation"
     fi
-    run_macos_app "$configuration" "MoltenVK" "$expected_validation" "MoltenVK_icd.json"
     run_simulator_app "$configuration" "MoltenVK" "$expected_validation" \
         "iOS" "$(app_dir "$configuration" "-iphonesimulator")" "iOS"
 }

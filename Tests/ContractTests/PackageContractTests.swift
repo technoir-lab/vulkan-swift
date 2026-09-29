@@ -58,12 +58,12 @@ struct PackageContractTests {
                     return false
                 }
                 return dependencyName == name
-                    && (condition["platformNames"] as? [String])?.contains(platform) == true
+                    && (condition["platformNames"] as? [String]) == [platform]
             }
         }
 
         #expect(dependsOn("VulkanLoaderMacOS", platform: "macos"))
-        #expect(dependsOn("MoltenVK", platform: "macos"))
+        #expect(!dependsOn("MoltenVK", platform: "macos"))
         #expect(dependsOn("KosmicKrisp", platform: "macos"))
         #expect(dependsOn("VulkanDriverMacOSResources", platform: "macos"))
         #expect(dependsOn("VulkanLoaderIOS", platform: "ios"))
