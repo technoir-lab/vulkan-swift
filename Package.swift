@@ -76,7 +76,7 @@ let package = Package(
         binaryTarget(
             name: "MoltenVK",
             localPath: "MoltenVK.xcframework",
-            checksum: "de1871bacf63d05f6e64bbb9c770218ccafda3e2c8acad5a7a283f449330baeb"
+            checksum: "0890f30238c510495e57a18d462040e5f4b9b692319ab05a8ee667b22ab5128a"
         ),
         binaryTarget(
             name: "VulkanValidationIOS",
@@ -86,7 +86,7 @@ let package = Package(
         binaryTarget(
             name: "VulkanValidationMacOS",
             localPath: "VulkanValidation-macos.xcframework",
-            checksum: "32a3f3add14a53b3967a008f65e9da85f72d1753b63cbede16d7413955d7e55a"
+            checksum: "f92a988b393f9dd7eb66bfadf214048af96d89adeb8625cc6e975518676303a0"
         ),
         .target(
             name: "VulkanDriverMacOSResources",

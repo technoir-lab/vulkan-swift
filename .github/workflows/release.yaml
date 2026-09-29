@@ -10,7 +10,7 @@ concurrency:
 jobs:
   deploy:
     name: Deploy release binaries
-    runs-on: macos-26
+    runs-on: xcode-27
 
     permissions:
       contents: write
