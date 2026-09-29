@@ -12,7 +12,7 @@ struct ConfigurationTests {
     @Test("central versions")
     func versions() throws {
         let config = try config
-        #expect(config["sdkVersion"] as? String == "1.4.357.0")
+        #expect(config["sdkVersion"] as? String == "1.4.363.0")
         #expect(
             config["repository"] as? String
                 == "https://github.com/technoir-lab/vulkan-swift"

@@ -9,6 +9,7 @@ extern "C" {
 
 typedef struct {
     uint32_t vulkanVersion;
+    uint32_t deviceVulkanVersion;
     const char* driverName;
     const char* error;
     int validationEnabled;

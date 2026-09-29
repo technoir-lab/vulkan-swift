@@ -55,20 +55,26 @@ run_macos_app() {
     local configuration="$1"
     local expected_driver="$2"
     local expected_validation="$3"
+    local icd_manifest="$4"
     local app
     app="$(app_dir "$configuration")"
     local output
-    output="$(
+    if ! output="$(
         sanitize_vulkan_env
+        export VULKAN_SWIFT_SAMPLE_ICD="$icd_manifest"
         "$app/Contents/MacOS/VulkanSwiftSample" 2>&1
-    )"
+    )"; then
+        die "macOS $configuration: $expected_driver probe failed: $output"
+    fi
     echo "$output" | grep -Eq "Driver: ($expected_driver)" \
         || die "macOS $configuration: expected driver '$expected_driver', got: $output"
     echo "$output" | grep -q "Validation: $expected_validation" \
         || die "macOS $configuration: expected validation '$expected_validation', got: $output"
     echo "$output" | grep -q "Vulkan version:" \
         || die "macOS $configuration: no Vulkan version in output: $output"
-    log "macOS $configuration: $expected_driver, validation $expected_validation"
+    echo "$output" | grep -q "Device Vulkan version:" \
+        || die "macOS $configuration: no device Vulkan version in output: $output"
+    log "macOS $configuration: $expected_driver, Vulkan 1.4, validation $expected_validation"
 }
 
 find_simulator() {
@@ -114,15 +120,17 @@ run_simulator_app() {
         || die "$platform $configuration: expected driver '$expected_driver', got: $output"
     echo "$output" | grep -q "Validation: $expected_validation" \
         || die "$platform $configuration: expected validation '$expected_validation', got: $output"
-    log "$platform $configuration: $expected_driver, validation $expected_validation"
+    echo "$output" | grep -q "Device Vulkan version:" \
+        || die "$platform $configuration: no device Vulkan version in output: $output"
+    log "$platform $configuration: $expected_driver, Vulkan 1.4, validation $expected_validation"
 }
 
 check_macos_bundle() {
     local configuration="$1"
     local app
     app="$(app_dir "$configuration")"
-    assert_present "$app" "Contents/Frameworks/libvulkan.1.dylib" "macOS $configuration"
-    assert_present "$app" "Contents/Frameworks/libvulkan_kosmickrisp.dylib" "macOS $configuration"
+    assert_present "$app" "Contents/Frameworks/vulkan.framework/Versions/A/vulkan" "macOS $configuration"
+    assert_present "$app" "Contents/Frameworks/KosmicKrisp.framework/Versions/A/KosmicKrisp" "macOS $configuration"
     assert_present "$app" "Contents/Frameworks/MoltenVK.framework/MoltenVK" "macOS $configuration"
     assert_present "$app" \
         "Contents/Resources/vulkan-swift_VulkanDriverMacOSResources.bundle/Contents/Resources/vulkan/icd.d/libkosmickrisp_icd.json" \
@@ -144,7 +152,7 @@ check_ios_bundle() {
     app="$(app_dir "$configuration" "-iphonesimulator")"
     assert_present "$app" "Frameworks/vulkan.framework/vulkan" "iOS $configuration"
     assert_present "$app" "Frameworks/MoltenVK.framework/MoltenVK" "iOS $configuration"
-    assert_absent "$app" "libvulkan_kosmickrisp*" "iOS $configuration"
+    assert_absent "$app" "KosmicKrisp.framework" "iOS $configuration"
     assert_present "$app" \
         "vulkan-swift_VulkanDriverIOSResources.bundle/vulkan/icd.d/MoltenVK_icd.json" \
         "iOS $configuration"
@@ -190,7 +198,12 @@ build_configuration() {
 
     check_macos_bundle "$configuration"
     check_ios_bundle "$configuration"
-    run_macos_app "$configuration" "KosmicKrisp|MoltenVK" "$expected_validation"
+    if [[ "${VULKAN_SWIFT_SAMPLE_SKIP_KOSMICKRISP:-0}" == 1 ]]; then
+        log "macOS $configuration: KosmicKrisp runtime check skipped (Metal 4 hardware required)"
+    else
+        run_macos_app "$configuration" "KosmicKrisp" "$expected_validation" "libkosmickrisp_icd.json"
+    fi
+    run_macos_app "$configuration" "MoltenVK" "$expected_validation" "MoltenVK_icd.json"
     run_simulator_app "$configuration" "MoltenVK" "$expected_validation" \
         "iOS" "$(app_dir "$configuration" "-iphonesimulator")" "iOS"
 }

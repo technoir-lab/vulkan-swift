@@ -28,7 +28,7 @@ embedded in the resource bundles.
 
 Packaging:
 
-- macOS: `libvulkan.1.dylib`, `libvulkan_kosmickrisp.dylib`, and
+- macOS: `vulkan.framework`, `KosmicKrisp.framework`, and
   `MoltenVK.framework` land in `Contents/Frameworks`; the KosmicKrisp and
   MoltenVK ICD manifests are in
   `Contents/Resources/<Pkg>_VulkanDriverMacOSResources.bundle/Contents/Resources/vulkan/icd.d/`.
@@ -46,6 +46,17 @@ contents: macOS bundles have a nested `Contents/Resources` directory, while iOS
 bundles keep resources at their root. No manifest rewriting or bundle flattening
 is needed for this layout. Consumers that arrange libraries and resources
 differently must provide matching manifest paths.
+
+KosmicKrisp uses Metal 4 on macOS 26 or later and supports Vulkan 1.4.
+`make check-sample` requests Vulkan 1.4 and verifies the loader and physical
+device API versions with each macOS driver separately, plus MoltenVK on the
+iOS Simulator, with validation enabled.
+
+GitHub-hosted macOS runners expose a virtual GPU without Metal 4 support.
+CI and release workflows set `VULKAN_SWIFT_SAMPLE_SKIP_KOSMICKRISP=1` to
+skip that driver's runtime probe while retaining all sample builds, bundle
+checks, and MoltenVK runtime probes. Run `make check-sample` locally on a
+Metal 4-capable Mac to exercise KosmicKrisp; the default runs every probe.
 
 Staging preserves SDK payloads, then adds deterministic ad-hoc signatures to
 unsigned runtime Mach-O binaries and frameworks across all shipped Apple

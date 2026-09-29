@@ -73,10 +73,10 @@ require_sdk() {
         kind="$(artifact_field "$id" kind)"
         source="$(replace_placeholder "$(artifact_field "$id" source)")"
         case "$kind" in
-            vendor-xcframework)
+            vendor-xcframework|vendor-framework)
                 [[ -d "$source" ]] || { log "Error: missing SDK artifact '$id': $source" >&2; missing=1; }
                 ;;
-            wrapped-dylib|wrapped-bundle)
+            wrapped-bundle)
                 [[ -f "$source" ]] || { log "Error: missing SDK artifact '$id': $source" >&2; missing=1; }
                 ;;
             *)
@@ -138,4 +138,6 @@ sanitize_vulkan_env() {
     unset VK_IMPLICIT_LAYER_PATH
     unset DYLD_LIBRARY_PATH
     unset DYLD_FALLBACK_LIBRARY_PATH
+    unset DYLD_FRAMEWORK_PATH
+    unset DYLD_FALLBACK_FRAMEWORK_PATH
 }

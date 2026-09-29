@@ -180,13 +180,11 @@ struct ArtifactTests {
         }
     }
 
-    @Test("wrapped macOS payloads contain a dylib")
+    @Test("wrapped validation payloads contain a dylib")
     func wrappedPayloadContents() throws {
         let artifacts = try artifacts
         for artifact in artifacts
-        where ["wrapped-dylib", "wrapped-bundle"].contains(
-            artifact["kind"] as? String
-        ) {
+        where artifact["kind"] as? String == "wrapped-bundle" {
             let id = try #require(artifact["id"] as? String)
             let archiveName = try archiveName(for: id)
             let local = try #require(artifact["local"] as? String)

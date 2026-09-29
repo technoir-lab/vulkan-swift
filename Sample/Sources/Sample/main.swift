@@ -12,6 +12,7 @@ func configureVulkanManifestEnvironment() {
 
     var icdManifests: [String] = []
     var layerDirectories: [String] = []
+    let selectedICD = ProcessInfo.processInfo.environment["VULKAN_SWIFT_SAMPLE_ICD"]
 
     let bundleURLs = (try? FileManager.default.contentsOfDirectory(
         at: resourceRoot,
@@ -27,6 +28,9 @@ func configureVulkanManifestEnvironment() {
             includingPropertiesForKeys: nil
         )) ?? []
         for manifest in manifests where manifest.pathExtension == "json" {
+            if let selectedICD, manifest.lastPathComponent != selectedICD {
+                continue
+            }
             icdManifests.append(manifest.path)
         }
 
@@ -42,6 +46,9 @@ func configureVulkanManifestEnvironment() {
         }
     }
 
+    if let selectedICD, icdManifests.isEmpty {
+        fatalError("Requested ICD manifest not found: \(selectedICD)")
+    }
     if !icdManifests.isEmpty {
         let value = icdManifests.joined(separator: ":")
         _ = value.withCString {
@@ -86,12 +93,15 @@ if let errorPointer = result.error {
     }
 }
 
-let version = result.vulkanVersion
-let major = (version >> 22) & 0x3FF
-let minor = (version >> 12) & 0x3FF
-let patch = version & 0xFFF
+func versionString(_ version: UInt32) -> String {
+    let major = (version >> 22) & 0x7F
+    let minor = (version >> 12) & 0x3FF
+    let patch = version & 0xFFF
+    return "\(major).\(minor).\(patch)"
+}
 
-var report = "Vulkan version: \(major).\(minor).\(patch)"
+var report = "Vulkan version: \(versionString(result.vulkanVersion))"
+report += "\nDevice Vulkan version: \(versionString(result.deviceVulkanVersion))"
 if let driverName = result.driverName {
     report += "\nDriver: \(String(cString: driverName))"
 }
