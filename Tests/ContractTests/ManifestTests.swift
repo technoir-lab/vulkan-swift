@@ -38,19 +38,6 @@ struct ManifestTests {
         )
     }
 
-    @Test("macOS MoltenVK manifest points into Contents/Frameworks")
-    func macosMoltenVKDriverManifest() throws {
-        let path = try libraryPath(
-            "VulkanDriverMacOSResources",
-            "vulkan/icd.d",
-            named: "MoltenVK_icd.json"
-        )
-        #expect(
-            path
-                == "../../../../../../Frameworks/MoltenVK.framework/Versions/A/MoltenVK"
-        )
-    }
-
     @Test("iOS MoltenVK manifest keeps SDK-relative framework path shape")
     func iosDriverManifest() throws {
         let path = try libraryPath(
@@ -99,8 +86,6 @@ struct ManifestTests {
         let cases: [(String, String, String, String)] = [
             ("VulkanDriverMacOSResources", "icd.d", "libkosmickrisp_icd.json",
              "KosmicKrisp.framework/Versions/A/KosmicKrisp"),
-            ("VulkanDriverMacOSResources", "icd.d", "MoltenVK_icd.json",
-             "MoltenVK.framework/Versions/A/MoltenVK"),
             ("VulkanValidationMacOSResources", "explicit_layer.d", "VkLayer_khronos_validation.json",
              "VulkanValidationMacOS.framework/Versions/A/Resources/libVkLayer_khronos_validation.dylib"),
             ("VulkanDriverIOSResources", "icd.d", "MoltenVK_icd.json",
@@ -142,12 +127,6 @@ struct ManifestTests {
                 "vulkan/icd.d",
                 "libkosmickrisp_icd.json",
                 "\(root)/macOS/share/vulkan/icd.d/libkosmickrisp_icd.json"
-            ),
-            (
-                "VulkanDriverMacOSResources",
-                "vulkan/icd.d",
-                "MoltenVK_icd.json",
-                "\(root)/macOS/share/vulkan/icd.d/MoltenVK_icd.json"
             ),
             (
                 "VulkanDriverIOSResources",
@@ -237,12 +216,12 @@ struct SampleContractTests {
         #expect(shim.contains("#endif"))
     }
 
-    @Test("shim requests portability on macOS and iOS")
+    @Test("shim requests portability on iOS")
     func shimPortability() throws {
         let url = TestSupport.repoRoot
             .appendingPathComponent("Sample/Sources/VolkProbe/shim.c")
         let content = try String(contentsOf: url, encoding: .utf8)
-        #expect(content.contains("TARGET_OS_OSX || TARGET_OS_IPHONE"))
+        #expect(content.contains("#if TARGET_OS_IPHONE"))
         #expect(
             content.contains("VK_INSTANCE_CREATE_ENUMERATE_PORTABILITY_BIT_KHR")
         )

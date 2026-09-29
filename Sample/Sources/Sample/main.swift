@@ -12,7 +12,6 @@ func configureVulkanManifestEnvironment() {
 
     var icdManifests: [String] = []
     var layerDirectories: [String] = []
-    let selectedICD = ProcessInfo.processInfo.environment["VULKAN_SWIFT_SAMPLE_ICD"]
 
     let bundleURLs = (try? FileManager.default.contentsOfDirectory(
         at: resourceRoot,
@@ -28,9 +27,6 @@ func configureVulkanManifestEnvironment() {
             includingPropertiesForKeys: nil
         )) ?? []
         for manifest in manifests where manifest.pathExtension == "json" {
-            if let selectedICD, manifest.lastPathComponent != selectedICD {
-                continue
-            }
             icdManifests.append(manifest.path)
         }
 
@@ -46,9 +42,6 @@ func configureVulkanManifestEnvironment() {
         }
     }
 
-    if let selectedICD, icdManifests.isEmpty {
-        fatalError("Requested ICD manifest not found: \(selectedICD)")
-    }
     if !icdManifests.isEmpty {
         let value = icdManifests.joined(separator: ":")
         _ = value.withCString {

@@ -1,7 +1,7 @@
 # vulkan-swift
 
-SwiftPM package that transports the Vulkan loader, the KosmicKrisp and
-MoltenVK drivers, optional validation layers, and their loader manifests.
+SwiftPM package that transports the Vulkan loader, KosmicKrisp on macOS,
+MoltenVK on iOS, optional validation layers, and their loader manifests.
 
 ## Usage
 
@@ -28,9 +28,8 @@ embedded in the resource bundles.
 
 Packaging:
 
-- macOS: `vulkan.framework`, `KosmicKrisp.framework`, and
-  `MoltenVK.framework` land in `Contents/Frameworks`; the KosmicKrisp and
-  MoltenVK ICD manifests are in
+- macOS: `vulkan.framework` and `KosmicKrisp.framework` land in
+  `Contents/Frameworks`; the KosmicKrisp ICD manifest is in
   `Contents/Resources/<Pkg>_VulkanDriverMacOSResources.bundle/Contents/Resources/vulkan/icd.d/`.
 - iOS: `vulkan.xcframework` + `MoltenVK.xcframework` land in `Frameworks/`;
   the MoltenVK ICD manifest is in
@@ -49,13 +48,13 @@ differently must provide matching manifest paths.
 
 KosmicKrisp uses Metal 4 on macOS 26 or later and supports Vulkan 1.4.
 `make check-sample` requests Vulkan 1.4 and verifies the loader and physical
-device API versions with each macOS driver separately, plus MoltenVK on the
-iOS Simulator, with validation enabled.
+device API versions with KosmicKrisp on macOS and MoltenVK on the iOS
+Simulator, with validation enabled.
 
 GitHub-hosted macOS runners expose a virtual GPU without Metal 4 support.
 CI and release workflows set `VULKAN_SWIFT_SAMPLE_SKIP_KOSMICKRISP=1` to
 skip that driver's runtime probe while retaining all sample builds, bundle
-checks, and MoltenVK runtime probes. Run `make check-sample` locally on a
+checks, and the iOS Simulator runtime probe. Run `make check-sample` locally on a
 Metal 4-capable Mac to exercise KosmicKrisp; the default runs every probe.
 
 Staging preserves SDK payloads, then adds deterministic ad-hoc signatures to
