@@ -5,7 +5,7 @@
         "prefix": "vvl",
         "type": "GLOBAL",
         "library_path": "../../../../../../Frameworks/VulkanValidationMacOS.framework/Versions/A/Resources/libVkLayer_khronos_validation.dylib",
-        "api_version": "1.4.357",
+        "api_version": "1.4.363",
         "implementation_version": "1",
         "description": "Khronos Validation Layer",
         "introduction": "The main, comprehensive Khronos validation layer.\n\nVulkan is an Explicit API, enabling direct control over how GPUs actually work. By design, minimal error checking is done inside a Vulkan driver. Applications have full control and responsibility for correct operation. Any errors in how Vulkan is used can result in a crash. \n\nThe Khronos Validation Layer can be enabled to assist development by enabling developers to verify their applications correctly use the Vulkan API.",
@@ -201,7 +201,11 @@
                             "value": true
                         },
                         {
-                            "key": "syncval_submit_time_validation",
+                            "key": "syncval_full_validation",
+                            "value": true
+                        },
+                        {
+                            "key": "syncval_record_time_validation",
                             "value": true
                         },
                         {
@@ -1071,10 +1075,45 @@
                             "expanded": false,
                             "settings": [
                                 {
-                                    "key": "syncval_submit_time_validation",
-                                    "label": "Submit time validation",
-                                    "description": "Enable synchronization validation on the boundary between submitted command buffers. This also validates accesses from presentation operations. This option can incur a significant performance cost.",
+                                    "key": "syncval_full_validation",
+                                    "label": "Full validation",
+                                    "description": "Validate all accesses. Errors are reported during queue submission.",
                                     "type": "BOOL",
+                                    "default": true,
+                                    "view": "HIDDEN",
+                                    "dependence": {
+                                        "mode": "ALL",
+                                        "settings": [
+                                            {
+                                                "key": "validate_sync",
+                                                "value": true
+                                            }
+                                        ]
+                                    }
+                                },
+                                {
+                                    "key": "syncval_record_time_validation",
+                                    "label": "Record-time reporting",
+                                    "description": "Report errors during command buffer recording, at the command that caused them. This runs a subset of full validation and adds CPU overhead. Disabling it does not reduce validation coverage. Full validation reports errors during queue submission.",
+                                    "type": "BOOL",
+                                    "default": true,
+                                    "dependence": {
+                                        "mode": "ALL",
+                                        "settings": [
+                                            {
+                                                "key": "validate_sync",
+                                                "value": true
+                                            }
+                                        ]
+                                    }
+                                },
+                                {
+                                    "key": "syncval_submit_time_validation",
+                                    "label": "Submit-time validation (deprecated)",
+                                    "description": "Deprecated, use Full validation instead. When present it sets Full validation.",
+                                    "type": "BOOL",
+                                    "status": "DEPRECATED",
+                                    "view": "HIDDEN",
                                     "default": true,
                                     "dependence": {
                                         "mode": "ALL",
@@ -1645,6 +1684,23 @@
                                                 "min": 0,
                                                 "max": 65534
                                             },
+                                            "dependence": {
+                                                "mode": "ALL",
+                                                "settings": [
+                                                    {
+                                                        "key": "gpuav_enable",
+                                                        "value": true
+                                                    }
+                                                ]
+                                            }
+                                        },
+                                        {
+                                            "key": "gpuav_debug_test_lower_limits",
+                                            "label": "Lower Device Limits for Unit Testing",
+                                            "description": "Only for use by the Validation Layer test suite, ignore otherwise.",
+                                            "type": "BOOL",
+                                            "view": "HIDDEN",
+                                            "default": false,
                                             "dependence": {
                                                 "mode": "ALL",
                                                 "settings": [
@@ -2318,7 +2374,7 @@
                                                     "changes": [
                                                         {
                                                             "setting": {
-                                                                "key": "gpu_dump_copy_memory_indirect",
+                                                                "key": "gpu_dump_device_generated_commands",
                                                                 "value": false
                                                             }
                                                         }
@@ -2557,7 +2613,8 @@
                                             ]
                                         },
                                         "BUTTON1": {
-                                            "type": "CANCEL"
+                                            "type": "CANCEL",
+                                            "changes": []
                                         }
                                     }
                                 }
@@ -2665,12 +2722,6 @@
                             "key": "error",
                             "label": "Error",
                             "description": "Report errors in API usage."
-                        },
-                        {
-                            "key": "debug",
-                            "label": "Debug",
-                            "description": "For layer development. Report messages for debugging layer behavior.",
-                            "view": "DEBUG"
                         }
                     ],
                     "messages": [
@@ -2707,7 +2758,8 @@
                             "actions": {
                                 "default": "BUTTON0",
                                 "BUTTON0": {
-                                    "type": "OK"
+                                    "type": "OK",
+                                    "changes": []
                                 },
                                 "BUTTON1": {
                                     "type": "CANCEL",

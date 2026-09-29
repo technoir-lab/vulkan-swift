@@ -85,27 +85,20 @@ build_framework_wrapper() {
     )
 }
 
-build_dylib_wrapper() {
+stage_vendor_framework() {
     local source="$1"
     local local_path="$2"
-    local regular_dir="$repo_root/Build/regular"
-    local regular_copy="$regular_dir/$(basename "$source")"
     local wrapped_tmp="$repo_root/Build/$(basename "$local_path" .xcframework).tmp.xcframework"
 
-    # The SDK ships some dylibs as symlinks. Wrap a regular byte-identical
-    # copy so the archive contains a real file.
-    mkdir -p "$regular_dir"
-    cp -L "$source" "$regular_copy"
     rm -rf "$wrapped_tmp"
     xcodebuild -create-xcframework \
-        -library "$regular_copy" \
+        -framework "$source" \
         -output "$wrapped_tmp" >/dev/null
-    rm -f "$regular_copy"
     rm -rf "$local_path"
     mv "$wrapped_tmp" "$local_path"
     [[ -d "$local_path" && ! -L "$local_path" ]] \
-        || die "wrapped artifact is not a directory: $local_path"
-    log "Wrapped dylib: $local_path"
+        || die "vendor artifact is not a directory: $local_path"
+    log "Packaged vendor framework: $local_path"
 }
 
 stage() {
@@ -125,8 +118,8 @@ stage() {
                     || die "vendor artifact is not a directory: $local_path"
                 log "Copied framework: $local_path"
                 ;;
-            wrapped-dylib)
-                build_dylib_wrapper "$source" "$local_path"
+            vendor-framework)
+                stage_vendor_framework "$source" "$local_path"
                 ;;
             wrapped-bundle)
                 build_framework_wrapper "$id" "$source" "$local_path"

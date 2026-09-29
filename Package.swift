@@ -24,7 +24,7 @@ let artifactsDirectory = localArtifactsDirectory()
 // Scripts/release.sh. sdkVersion mirrors the SDK version from the central
 // configuration so both values appear exactly once per binary URL.
 let packageVersion = "1.0.2"
-let sdkVersion = "1.4.357.0"
+let sdkVersion = "1.4.363.0"
 let repository = "https://github.com/technoir-lab/vulkan-swift"
 
 func binaryTarget(
@@ -61,32 +61,32 @@ let package = Package(
         binaryTarget(
             name: "VulkanLoaderMacOS",
             localPath: "VulkanLoader-macos.xcframework",
-            checksum: "88e4811c084cfd549ea861fd8d3e41bc5c0160a81114c76bd7a954b9ad9b36e2"
+            checksum: "7cff8b34d40733f5fa5f135f1843d5f2598ed398c584c9a138946c584e58a9b5"
         ),
         binaryTarget(
             name: "VulkanLoaderIOS",
             localPath: "VulkanLoader-ios.xcframework",
-            checksum: "6ccf33aec00e058c73c41c76f75c33c94161814d97c23826eaa24ce42ff46ff6"
+            checksum: "dcccf64bbf9f12ad6be7b9a164af3e5f7792f634793ce1bbda76ee94832891fa"
         ),
         binaryTarget(
             name: "KosmicKrisp",
             localPath: "KosmicKrisp.xcframework",
-            checksum: "82c9b1a91458fdb7fe1b374cdba7bf39a57bf1bd52d40e010ac7d2bcdf6b9ca0"
+            checksum: "3c6796f2b9edb7091c7986349ec84d0e61590cb0afd038278ccd316801291809"
         ),
         binaryTarget(
             name: "MoltenVK",
             localPath: "MoltenVK.xcframework",
-            checksum: "0890f30238c510495e57a18d462040e5f4b9b692319ab05a8ee667b22ab5128a"
+            checksum: "8a14d9b134d9a0e35470f81bfa07c3e7640e3058da17562363c99e9f1ea77dfc"
         ),
         binaryTarget(
             name: "VulkanValidationIOS",
             localPath: "VulkanValidation-ios.xcframework",
-            checksum: "c2477359470684616d6b919713e264f4cc96a6d28cfb66ed6afcad470e54c650"
+            checksum: "107d298c5eca37e6e518d6f7ca8569fe58695049ff099fd75d064c7264b2773e"
         ),
         binaryTarget(
             name: "VulkanValidationMacOS",
             localPath: "VulkanValidation-macos.xcframework",
-            checksum: "f92a988b393f9dd7eb66bfadf214048af96d89adeb8625cc6e975518676303a0"
+            checksum: "9a9e3274446913d989bcaaf1169ccd69b0ebecbc87938c11eb1413ead42b0e5a"
         ),
         .target(
             name: "VulkanDriverMacOSResources",

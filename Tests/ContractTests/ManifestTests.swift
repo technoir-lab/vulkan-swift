@@ -34,7 +34,7 @@ struct ManifestTests {
         )
         #expect(
             path
-                == "../../../../../../Frameworks/libvulkan_kosmickrisp.dylib"
+                == "../../../../../../Frameworks/KosmicKrisp.framework/Versions/A/KosmicKrisp"
         )
     }
 
@@ -98,7 +98,7 @@ struct ManifestTests {
         let app = URL(fileURLWithPath: "/Applications/Sample.app", isDirectory: true)
         let cases: [(String, String, String, String)] = [
             ("VulkanDriverMacOSResources", "icd.d", "libkosmickrisp_icd.json",
-             "libvulkan_kosmickrisp.dylib"),
+             "KosmicKrisp.framework/Versions/A/KosmicKrisp"),
             ("VulkanDriverMacOSResources", "icd.d", "MoltenVK_icd.json",
              "MoltenVK.framework/Versions/A/MoltenVK"),
             ("VulkanValidationMacOSResources", "explicit_layer.d", "VkLayer_khronos_validation.json",

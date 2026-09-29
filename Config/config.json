@@ -1,5 +1,5 @@
 {
-  "sdkVersion": "1.4.357.0",
+  "sdkVersion": "1.4.363.0",
   "platforms": {
     "macOS": {
       "deploymentTarget": "26.0"
@@ -19,8 +19,8 @@
   "artifacts": [
     {
       "id": "VulkanLoaderMacOS",
-      "kind": "wrapped-dylib",
-      "source": "$SDK_ROOT/macOS/lib/libvulkan.1.dylib",
+      "kind": "vendor-framework",
+      "source": "$SDK_ROOT/macOS/Frameworks/vulkan.framework",
       "local": "Artifacts/VulkanLoader-macos.xcframework",
       "licenses": [
         "Vulkan-Loader.txt"
@@ -37,8 +37,8 @@
     },
     {
       "id": "KosmicKrisp",
-      "kind": "wrapped-dylib",
-      "source": "$SDK_ROOT/macOS/lib/libvulkan_kosmickrisp.dylib",
+      "kind": "vendor-framework",
+      "source": "$SDK_ROOT/macOS/lib/KosmicKrisp.framework",
       "local": "Artifacts/KosmicKrisp.xcframework",
       "licenses": [
         "Mesa-MIT.txt"

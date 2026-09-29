@@ -34,7 +34,13 @@ VulkanProbeResult vulkan_probe(void)
 
     if (vkEnumerateInstanceVersion(&result.vulkanVersion) != VK_SUCCESS)
     {
-        result.vulkanVersion = 0;
+        setError("vkEnumerateInstanceVersion failed");
+        return result;
+    }
+    if (result.vulkanVersion < VK_API_VERSION_1_4)
+    {
+        setError("Vulkan loader does not support Vulkan 1.4");
+        return result;
     }
 
     const char* enabledExtensions[1];
@@ -57,7 +63,7 @@ VulkanProbeResult vulkan_probe(void)
         .applicationVersion = 0,
         .pEngineName = NULL,
         .engineVersion = 0,
-        .apiVersion = VK_API_VERSION_1_3,
+        .apiVersion = VK_API_VERSION_1_4,
     };
 
     VkInstanceCreateInfo createInfo = {
@@ -85,19 +91,13 @@ VulkanProbeResult vulkan_probe(void)
 
     volkLoadInstance(instance);
 
-    uint32_t deviceCount = 0;
-    VkResult enumResult =
-        vkEnumeratePhysicalDevices(instance, &deviceCount, NULL);
-    if (enumResult != VK_SUCCESS || deviceCount == 0)
-    {
-        setError("no physical devices");
-        vkDestroyInstance(instance, NULL);
-        return result;
-    }
-
+    // Probe the first device; limit the output capacity even when the loader
+    // exposes multiple drivers or GPUs.
+    uint32_t deviceCount = 1;
     VkPhysicalDevice device = VK_NULL_HANDLE;
-    enumResult = vkEnumeratePhysicalDevices(instance, &deviceCount, &device);
-    if (enumResult != VK_SUCCESS)
+    VkResult enumResult =
+        vkEnumeratePhysicalDevices(instance, &deviceCount, &device);
+    if ((enumResult != VK_SUCCESS && enumResult != VK_INCOMPLETE) || deviceCount == 0)
     {
         setError("no physical devices");
         vkDestroyInstance(instance, NULL);
@@ -112,6 +112,13 @@ VulkanProbeResult vulkan_probe(void)
         .pNext = &driverProperties,
     };
     vkGetPhysicalDeviceProperties2(device, &properties);
+    result.deviceVulkanVersion = properties.properties.apiVersion;
+    if (result.deviceVulkanVersion < VK_API_VERSION_1_4)
+    {
+        setError("physical device does not support Vulkan 1.4");
+        vkDestroyInstance(instance, NULL);
+        return result;
+    }
 
     snprintf(g_driverName, sizeof(g_driverName), "%s",
              driverProperties.driverName);
