@@ -33,3 +33,10 @@ SwiftPM package that ships the Vulkan loader, KosmicKrisp/MoltenVK drivers, and 
 - Platform split: macOS uses the native KosmicKrisp framework; iOS uses MoltenVK. KosmicKrisp requires Metal 4 on macOS 26+. Manifests under `Sources/*/vulkan/` are embedded SwiftPM resources; SDK bumps refresh them from the vendor JSON while preserving the app-relative `library_path` overrides.
 - Sample: `Sample/Sources/VolkProbe/volk/` is a gitignored symlink to SDK Volk sources (staged by `Scripts/check-sample.sh`). Build it with `tuist xcodebuild build` (Tuist 4's build action) — plain `tuist build` is a different command group.
 - New SwiftPM targets must follow the platform-conditional dependency pattern in `Package.swift` (`condition: .when(platforms:)`).
+
+## Commits and Pull Requests
+
+- Use descriptive branch names without AI harness prefixes (such as `codex/`, `claude/`, `cursor/`, or `junie/`).
+- Keep commits focused and use short, imperative commit subjects.
+- Do not add a `Co-Authored-By` trailer.
+- PR descriptions should explain the problem, the changes made, and the resulting behavior. Include compatibility impacts, remaining limitations, and links to related issues when relevant. Do not include checks performed, validation commands, or validation results.
