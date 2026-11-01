@@ -1,6 +1,9 @@
 version: 2
 updates:
   - package-ecosystem: "github-actions"
+    cooldown:
+      exclude:
+        - "technoir-lab/*"
     directory: "/"
     schedule:
       interval: "monthly"
